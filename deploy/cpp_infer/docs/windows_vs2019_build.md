@@ -1,3 +1,5 @@
+[English](windows_vs2022_build.md) | 简体中文
+
 - [Visual Studio 2019 Community CMake 编译指南](#visual-studio-2019-community-cmake-编译指南)
   - [1. 环境准备](#1-环境准备)
     - [1.1 安装必须环境](#11-安装必须环境)
@@ -31,7 +33,7 @@ PaddleOCR在Windows 平台下基于`Visual Studio 2019 Community` 进行了测�
 
 #### 1.2.1 下载 PaddlePaddle C++ 预测库
 
-PaddlePaddle C++ 预测库针对不同的`CPU`和`CUDA`版本提供了不同的预编译版本，请根据实际情况下载:  [C++预测库下载列表](https://paddleinference.paddlepaddle.org.cn/user_guides/download_lib.html#windows)
+PaddlePaddle C++ 预测库针对不同的`CPU`和`CUDA`版本提供了不同的预编译版本，请根据实际情况下载:  [C++预测库下载列表](https://www.paddlepaddle.org.cn/inference/master/guides/install/download_lib.html#windows)
 
 解压后`D:\projects\paddle_inference`目录包含内容为：
 ```
@@ -45,7 +47,7 @@ paddle_inference
 
 #### 1.2.2 安装配置OpenCV
 
-1. 在OpenCV官网下载适用于Windows平台的Opencv， [下载地址](https://github.com/opencv/opencv/releases)  
+1. 在OpenCV官网下载适用于Windows平台的Opencv， [下载地址](https://github.com/opencv/opencv/releases)
 2. 运行下载的可执行文件，将OpenCV解压至指定目录，如`D:\projects\cpp\opencv`
 
 #### 1.2.3 下载PaddleOCR代码
@@ -121,7 +123,7 @@ CUDA_LIB、CUDNN_LIB、TENSORRT_DIR、WITH_GPU、WITH_TENSORRT
 ```
 cd /d D:\projects\cpp\PaddleOCR\deploy\cpp_infer
 ```
-可执行文件`ppocr.exe`即为样例的预测程序，其主要使用方法如下，更多使用方法可以参考[说明文档](../readme.md)`运行demo`部分。
+可执行文件`ppocr.exe`即为样例的预测程序，其主要使用方法如下，更多使用方法可以参考[说明文档](../readme_ch.md)`运行demo`部分。
 
 ```shell
 # 切换终端编码为utf8

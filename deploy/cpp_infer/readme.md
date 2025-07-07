@@ -14,7 +14,7 @@ English | [简体中文](readme_ch.md)
 
 
 This chapter introduces the C++ deployment steps of the PaddleOCR model. C++ is better than Python in terms of performance. Therefore, in CPU and GPU deployment scenarios, C++ deployment is mostly used.
-This section will introduce how to configure the C++ environment and deploy PaddleOCR in Linux (CPU\GPU) environment. For Windows deployment please refer to [Windows](./docs/windows_vs2019_build.md) compilation guidelines.
+This section will introduce how to configure the C++ environment and deploy PaddleOCR in Linux (CPU\GPU) environment. For Windows deployment please refer to [Windows](./docs/windows_vs2022_build.md) compilation guidelines.
 
 
 <a name="1"></a>
@@ -95,7 +95,7 @@ opencv3/
 
 #### 1.3.1 Direct download and installation
 
-[Paddle inference library official website](https://paddleinference.paddlepaddle.org.cn/user_guides/download_lib.html#linux). You can review and select the appropriate version of the inference library on the official website.
+[Paddle inference library official website](https://www.paddlepaddle.org.cn/inference/master/guides/install/download_lib.html#linux). You can review and select the appropriate version of the inference library on the official website.
 
 
 * After downloading, use the following command to extract files.

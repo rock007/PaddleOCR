@@ -1,42 +1,38 @@
 /*******************************************************************************
-*                                                                              *
-* Author    :  Angus Johnson                                                   *
-* Version   :  6.4.2                                                           *
-* Date      :  27 February 2017                                                *
-* Website   :  http://www.angusj.com                                           *
-* Copyright :  Angus Johnson 2010-2017                                         *
-*                                                                              *
-* License:                                                                     *
-* Use, modification & distribution is subject to Boost Software License Ver 1. *
-* http://www.boost.org/LICENSE_1_0.txt                                         *
-*                                                                              *
-* Attributions:                                                                *
-* The code in this library is an extension of Bala Vatti's clipping algorithm: *
-* "A generic solution to polygon clipping"                                     *
-* Communications of the ACM, Vol 35, Issue 7 (July 1992) pp 56-63.             *
-* http://portal.acm.org/citation.cfm?id=129906                                 *
-*                                                                              *
-* Computer graphics and geometric modeling: implementation and algorithms      *
-* By Max K. Agoston                                                            *
-* Springer; 1 edition (January 4, 2005)                                        *
-* http://books.google.com/books?q=vatti+clipping+agoston                       *
-*                                                                              *
-* See also:                                                                    *
-* "Polygon Offsetting by Computing Winding Numbers"                            *
-* Paper no. DETC2005-85513 pp. 565-575                                         *
-* ASME 2005 International Design Engineering Technical Conferences             *
-* and Computers and Information in Engineering Conference (IDETC/CIE2005)      *
-* September 24-28, 2005 , Long Beach, California, USA                          *
-* http://www.me.berkeley.edu/~mcmains/pubs/DAC05OffsetPolygon.pdf              *
-*                                                                              *
-*******************************************************************************/
+ *                                                                              *
+ * Author    :  Angus Johnson * Version   :  6.4.2 * Date      :  27 February
+ *2017                                                * Website   :
+ *http://www.angusj.com                                           * Copyright :
+ *Angus Johnson 2010-2017                                         *
+ *                                                                              *
+ * License: * Use, modification & distribution is subject to Boost Software
+ *License Ver 1. * http://www.boost.org/LICENSE_1_0.txt *
+ *                                                                              *
+ * Attributions: * The code in this library is an extension of Bala Vatti's
+ *clipping algorithm: * "A generic solution to polygon clipping" *
+ * Communications of the ACM, Vol 35, Issue 7 (July 1992) pp 56-63. *
+ * http://portal.acm.org/citation.cfm?id=129906 *
+ *                                                                              *
+ * Computer graphics and geometric modeling: implementation and algorithms * By
+ *Max K. Agoston                                                            *
+ * Springer; 1 edition (January 4, 2005) *
+ * http://books.google.com/books?q=vatti+clipping+agoston *
+ *                                                                              *
+ * See also: * "Polygon Offsetting by Computing Winding Numbers" * Paper no.
+ *DETC2005-85513 pp. 565-575                                         * ASME 2005
+ *International Design Engineering Technical Conferences             * and
+ *Computers and Information in Engineering Conference (IDETC/CIE2005)      *
+ * September 24-28, 2005 , Long Beach, California, USA *
+ * http://www.me.berkeley.edu/~mcmains/pubs/DAC05OffsetPolygon.pdf *
+ *                                                                              *
+ *******************************************************************************/
 
 /*******************************************************************************
-*                                                                              *
-* This is a translation of the Delphi Clipper library and the naming style     *
-* used has retained a Delphi flavour.                                          *
-*                                                                              *
-*******************************************************************************/
+ *                                                                              *
+ * This is a translation of the Delphi Clipper library and the naming style *
+ * used has retained a Delphi flavour. *
+ *                                                                              *
+ *******************************************************************************/
 
 #include "ocr_clipper.hpp"
 #include <algorithm>
@@ -150,13 +146,13 @@ void PolyTree::Clear() {
   for (PolyNodes::size_type i = 0; i < AllNodes.size(); ++i)
     delete AllNodes[i];
   AllNodes.resize(0);
-  Childs.resize(0);
+  Children.resize(0);
 }
 //------------------------------------------------------------------------------
 
 PolyNode *PolyTree::GetFirst() const {
-  if (!Childs.empty())
-    return Childs[0];
+  if (!Children.empty())
+    return Children[0];
   else
     return 0;
 }
@@ -165,7 +161,7 @@ PolyNode *PolyTree::GetFirst() const {
 int PolyTree::Total() const {
   int result = (int)AllNodes.size();
   // with negative offsets, ignore the hidden outer polygon ...
-  if (result > 0 && Childs[0] != AllNodes[0])
+  if (result > 0 && Children[0] != AllNodes[0])
     result--;
   return result;
 }
@@ -177,20 +173,20 @@ int PolyTree::Total() const {
 PolyNode::PolyNode() : Parent(0), Index(0), m_IsOpen(false) {}
 //------------------------------------------------------------------------------
 
-int PolyNode::ChildCount() const { return (int)Childs.size(); }
+int PolyNode::ChildCount() const { return (int)Children.size(); }
 //------------------------------------------------------------------------------
 
 void PolyNode::AddChild(PolyNode &child) {
-  unsigned cnt = (unsigned)Childs.size();
-  Childs.push_back(&child);
+  unsigned cnt = (unsigned)Children.size();
+  Children.push_back(&child);
   child.Parent = this;
   child.Index = cnt;
 }
 //------------------------------------------------------------------------------
 
 PolyNode *PolyNode::GetNext() const {
-  if (!Childs.empty())
-    return Childs[0];
+  if (!Children.empty())
+    return Children[0];
   else
     return GetNextSiblingUp();
 }
@@ -199,10 +195,10 @@ PolyNode *PolyNode::GetNext() const {
 PolyNode *PolyNode::GetNextSiblingUp() const {
   if (!Parent) // protects against PolyTree.GetNextSiblingUp()
     return 0;
-  else if (Index == Parent->Childs.size() - 1)
+  else if (Index == Parent->Children.size() - 1)
     return Parent->GetNextSiblingUp();
   else
-    return Parent->Childs[Index + 1];
+    return Parent->Children[Index + 1];
 }
 //------------------------------------------------------------------------------
 
@@ -1045,8 +1041,9 @@ bool ClipperBase::AddPath(const Path &pg, PolyType PolyTyp, bool Closed) {
     }
     if (E->Prev == E->Next)
       break; // only two vertices
-    else if (Closed && SlopesEqual(E->Prev->Curr, E->Curr, E->Next->Curr,
-                                   m_UseFullRange) &&
+    else if (Closed &&
+             SlopesEqual(E->Prev->Curr, E->Curr, E->Next->Curr,
+                         m_UseFullRange) &&
              (!m_PreserveCollinear ||
               !Pt2IsBetweenPt1AndPt3(E->Prev->Curr, E->Curr, E->Next->Curr))) {
       // Collinear edges are allowed for open paths but in closed paths
@@ -1573,7 +1570,7 @@ bool Clipper::ExecuteInternal() {
 
 void Clipper::SetWindingCount(TEdge &edge) {
   TEdge *e = edge.PrevInAEL;
-  // find the edge of the same polytype that immediately preceeds 'edge' in AEL
+  // find the edge of the same polytype that immediately precedes 'edge' in AEL
   while (e && ((e->PolyTyp != edge.PolyTyp) || (e->WindDelta == 0)))
     e = e->PrevInAEL;
   if (!e) {
@@ -2518,14 +2515,14 @@ void GetHorzDirection(TEdge &HorzEdge, Direction &Dir, cInt &Left,
 //------------------------------------------------------------------------
 
 /*******************************************************************************
-* Notes: Horizontal edges (HEs) at scanline intersections (ie at the Top or    *
-* Bottom of a scanbeam) are processed as if layered. The order in which HEs    *
-* are processed doesn't matter. HEs intersect with other HE Bot.Xs only [#]    *
-* (or they could intersect with Top.Xs only, ie EITHER Bot.Xs OR Top.Xs),      *
-* and with other non-horizontal edges [*]. Once these intersections are        *
-* processed, intermediate HEs then 'promote' the Edge above (NextInLML) into   *
-* the AEL. These 'promoted' edges may in turn intersect [%] with other HEs.    *
-*******************************************************************************/
+ * Notes: Horizontal edges (HEs) at scanline intersections (ie at the Top or *
+ * Bottom of a scanbeam) are processed as if layered. The order in which HEs *
+ * are processed doesn't matter. HEs intersect with other HE Bot.Xs only [#] *
+ * (or they could intersect with Top.Xs only, ie EITHER Bot.Xs OR Top.Xs), * and
+ *with other non-horizontal edges [*]. Once these intersections are        *
+ * processed, intermediate HEs then 'promote' the Edge above (NextInLML) into *
+ * the AEL. These 'promoted' edges may in turn intersect [%] with other HEs. *
+ *******************************************************************************/
 
 void Clipper::ProcessHorizontal(TEdge *horzEdge) {
   Direction dir;
@@ -2569,7 +2566,7 @@ void Clipper::ProcessHorizontal(TEdge *horzEdge) {
     while (e) {
 
       // this code block inserts extra coords into horizontal edges (in output
-      // polygons) whereever maxima touch these horizontal edges. This helps
+      // polygons) wherever maxima touch these horizontal edges. This helps
       //'simplifying' polygons (ie if the Simplify property is set).
       if (m_Maxima.size() > 0) {
         if (dir == dLeftToRight) {
@@ -3083,7 +3080,7 @@ void Clipper::BuildResult2(PolyTree &polytree) {
   }
 
   // fixup PolyNode links etc ...
-  polytree.Childs.reserve(m_PolyOuts.size());
+  polytree.Children.reserve(m_PolyOuts.size());
   for (PolyOutList::size_type i = 0; i < m_PolyOuts.size(); i++) {
     OutRec *outRec = m_PolyOuts[i];
     if (!outRec->PolyNd)
@@ -3616,8 +3613,8 @@ ClipperOffset::~ClipperOffset() { Clear(); }
 
 void ClipperOffset::Clear() {
   for (int i = 0; i < m_polyNodes.ChildCount(); ++i)
-    delete m_polyNodes.Childs[i];
-  m_polyNodes.Childs.clear();
+    delete m_polyNodes.Children[i];
+  m_polyNodes.Children.clear();
   m_lowest.X = -1;
 }
 //------------------------------------------------------------------------------
@@ -3659,7 +3656,8 @@ void ClipperOffset::AddPath(const Path &path, JoinType joinType,
   if (m_lowest.X < 0)
     m_lowest = IntPoint(m_polyNodes.ChildCount() - 1, k);
   else {
-    IntPoint ip = m_polyNodes.Childs[(int)m_lowest.X]->Contour[(int)m_lowest.Y];
+    IntPoint ip =
+        m_polyNodes.Children[(int)m_lowest.X]->Contour[(int)m_lowest.Y];
     if (newNode->Contour[k].Y > ip.Y ||
         (newNode->Contour[k].Y == ip.Y && newNode->Contour[k].X < ip.X))
       m_lowest = IntPoint(m_polyNodes.ChildCount() - 1, k);
@@ -3678,16 +3676,16 @@ void ClipperOffset::FixOrientations() {
   // fixup orientations of all closed paths if the orientation of the
   // closed path with the lowermost vertex is wrong ...
   if (m_lowest.X >= 0 &&
-      !Orientation(m_polyNodes.Childs[(int)m_lowest.X]->Contour)) {
+      !Orientation(m_polyNodes.Children[(int)m_lowest.X]->Contour)) {
     for (int i = 0; i < m_polyNodes.ChildCount(); ++i) {
-      PolyNode &node = *m_polyNodes.Childs[i];
+      PolyNode &node = *m_polyNodes.Children[i];
       if (node.m_endtype == etClosedPolygon ||
           (node.m_endtype == etClosedLine && Orientation(node.Contour)))
         ReversePath(node.Contour);
     }
   } else {
     for (int i = 0; i < m_polyNodes.ChildCount(); ++i) {
-      PolyNode &node = *m_polyNodes.Childs[i];
+      PolyNode &node = *m_polyNodes.Children[i];
       if (node.m_endtype == etClosedLine && !Orientation(node.Contour))
         ReversePath(node.Contour);
     }
@@ -3744,13 +3742,13 @@ void ClipperOffset::Execute(PolyTree &solution, double delta) {
     clpr.ReverseSolution(true);
     clpr.Execute(ctUnion, solution, pftNegative, pftNegative);
     // remove the outer PolyNode rectangle ...
-    if (solution.ChildCount() == 1 && solution.Childs[0]->ChildCount() > 0) {
-      PolyNode *outerNode = solution.Childs[0];
-      solution.Childs.reserve(outerNode->ChildCount());
-      solution.Childs[0] = outerNode->Childs[0];
-      solution.Childs[0]->Parent = outerNode->Parent;
+    if (solution.ChildCount() == 1 && solution.Children[0]->ChildCount() > 0) {
+      PolyNode *outerNode = solution.Children[0];
+      solution.Children.reserve(outerNode->ChildCount());
+      solution.Children[0] = outerNode->Children[0];
+      solution.Children[0]->Parent = outerNode->Parent;
       for (int i = 1; i < outerNode->ChildCount(); ++i)
-        solution.AddChild(*outerNode->Childs[i]);
+        solution.AddChild(*outerNode->Children[i]);
     } else
       solution.Clear();
   }
@@ -3765,7 +3763,7 @@ void ClipperOffset::DoOffset(double delta) {
   if (NEAR_ZERO(delta)) {
     m_destPolys.reserve(m_polyNodes.ChildCount());
     for (int i = 0; i < m_polyNodes.ChildCount(); i++) {
-      PolyNode &node = *m_polyNodes.Childs[i];
+      PolyNode &node = *m_polyNodes.Children[i];
       if (node.m_endtype == etClosedPolygon)
         m_destPolys.push_back(node.Contour);
     }
@@ -3797,7 +3795,7 @@ void ClipperOffset::DoOffset(double delta) {
 
   m_destPolys.reserve(m_polyNodes.ChildCount() * 2);
   for (int i = 0; i < m_polyNodes.ChildCount(); i++) {
-    PolyNode &node = *m_polyNodes.Childs[i];
+    PolyNode &node = *m_polyNodes.Children[i];
     m_srcPoly = node.Contour;
 
     int len = (int)m_srcPoly.size();
@@ -4324,7 +4322,7 @@ void AddPolyNodeToPaths(const PolyNode &polynode, NodeType nodetype,
   if (!polynode.Contour.empty() && match)
     paths.push_back(polynode.Contour);
   for (int i = 0; i < polynode.ChildCount(); ++i)
-    AddPolyNodeToPaths(*polynode.Childs[i], nodetype, paths);
+    AddPolyNodeToPaths(*polynode.Children[i], nodetype, paths);
 }
 //------------------------------------------------------------------------------
 
@@ -4347,8 +4345,8 @@ void OpenPathsFromPolyTree(PolyTree &polytree, Paths &paths) {
   paths.reserve(polytree.Total());
   // Open paths are top level only, so ...
   for (int i = 0; i < polytree.ChildCount(); ++i)
-    if (polytree.Childs[i]->IsOpen())
-      paths.push_back(polytree.Childs[i]->Contour);
+    if (polytree.Children[i]->IsOpen())
+      paths.push_back(polytree.Children[i]->Contour);
 }
 //------------------------------------------------------------------------------
 
@@ -4377,4 +4375,4 @@ std::ostream &operator<<(std::ostream &s, const Paths &p) {
 }
 //------------------------------------------------------------------------------
 
-} // ClipperLib namespace
+} // namespace ClipperLib

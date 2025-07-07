@@ -41,6 +41,13 @@ from .rec_vl_loss import VLLoss
 from .rec_spin_att_loss import SPINAttentionLoss
 from .rec_rfl_loss import RFLLoss
 from .rec_can_loss import CANLoss
+from .rec_satrn_loss import SATRNLoss
+from .rec_nrtr_loss import NRTRLoss
+from .rec_parseq_loss import ParseQLoss
+from .rec_cppd_loss import CPPDLoss
+from .rec_latexocr_loss import LaTeXOCRLoss
+from .rec_unimernet_loss import UniMERNetLoss
+from .rec_ppformulanet_loss import PPFormulaNet_S_Loss, PPFormulaNet_L_Loss
 
 # cls loss
 from .cls_loss import ClsLoss
@@ -58,6 +65,7 @@ from .combined_loss import CombinedLoss
 # table loss
 from .table_att_loss import TableAttentionLoss, SLALoss
 from .table_master_loss import TableMasterLoss
+
 # vqa token loss
 from .vqa_token_layoutlm_loss import VQASerTokenLayoutLMLoss
 
@@ -68,16 +76,49 @@ from .text_focus_loss import TelescopeLoss
 
 def build_loss(config):
     support_dict = [
-        'DBLoss', 'PSELoss', 'EASTLoss', 'SASTLoss', 'FCELoss', 'CTCLoss',
-        'ClsLoss', 'AttentionLoss', 'SRNLoss', 'PGLoss', 'CombinedLoss',
-        'CELoss', 'TableAttentionLoss', 'SARLoss', 'AsterLoss', 'SDMGRLoss',
-        'VQASerTokenLayoutLMLoss', 'LossFromOutput', 'PRENLoss', 'MultiLoss',
-        'TableMasterLoss', 'SPINAttentionLoss', 'VLLoss', 'StrokeFocusLoss',
-        'SLALoss', 'CTLoss', 'RFLLoss', 'DRRGLoss', 'CANLoss', 'TelescopeLoss'
+        "DBLoss",
+        "PSELoss",
+        "EASTLoss",
+        "SASTLoss",
+        "FCELoss",
+        "CTCLoss",
+        "ClsLoss",
+        "AttentionLoss",
+        "SRNLoss",
+        "PGLoss",
+        "CombinedLoss",
+        "CELoss",
+        "TableAttentionLoss",
+        "SARLoss",
+        "AsterLoss",
+        "SDMGRLoss",
+        "VQASerTokenLayoutLMLoss",
+        "LossFromOutput",
+        "PRENLoss",
+        "MultiLoss",
+        "TableMasterLoss",
+        "SPINAttentionLoss",
+        "VLLoss",
+        "StrokeFocusLoss",
+        "SLALoss",
+        "CTLoss",
+        "RFLLoss",
+        "DRRGLoss",
+        "CANLoss",
+        "TelescopeLoss",
+        "SATRNLoss",
+        "NRTRLoss",
+        "ParseQLoss",
+        "CPPDLoss",
+        "LaTeXOCRLoss",
+        "UniMERNetLoss",
+        "PPFormulaNet_S_Loss",
+        "PPFormulaNet_L_Loss",
     ]
     config = copy.deepcopy(config)
-    module_name = config.pop('name')
-    assert module_name in support_dict, Exception('loss only support {}'.format(
-        support_dict))
+    module_name = config.pop("name")
+    assert module_name in support_dict, Exception(
+        "loss only support {}".format(support_dict)
+    )
     module_class = eval(module_name)(**config)
     return module_class

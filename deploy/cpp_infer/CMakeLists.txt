@@ -62,6 +62,7 @@ if (WIN32)
     if (WITH_STATIC_LIB)
         safe_set_static_flag()
         add_definitions(-DSTATIC_LIB)
+	add_definitions(-DYAML_CPP_STATIC_DEFINE)
     endif()
     message("cmake c debug flags " ${CMAKE_C_FLAGS_DEBUG})
     message("cmake c release flags " ${CMAKE_C_FLAGS_RELEASE})
@@ -71,7 +72,7 @@ else()
     if(WITH_MKL)
         set(FLAG_OPENMP "-fopenmp")
     endif()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -o3 ${FLAG_OPENMP} -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O3 ${FLAG_OPENMP} -std=c++11")
     set(CMAKE_STATIC_LIBRARY_PREFIX "")
     message("cmake cxx flags" ${CMAKE_CXX_FLAGS})
 endif()
@@ -94,6 +95,7 @@ include_directories("${PADDLE_LIB}/third_party/install/xxhash/include")
 include_directories("${PADDLE_LIB}/third_party/install/zlib/include")
 include_directories("${PADDLE_LIB}/third_party/install/onnxruntime/include")
 include_directories("${PADDLE_LIB}/third_party/install/paddle2onnx/include")
+include_directories("${PADDLE_LIB}/third_party/install/yaml-cpp/include")
 include_directories("${PADDLE_LIB}/third_party/boost")
 include_directories("${PADDLE_LIB}/third_party/eigen3")
 
@@ -114,6 +116,7 @@ link_directories("${PADDLE_LIB}/third_party/install/gflags/lib")
 link_directories("${PADDLE_LIB}/third_party/install/xxhash/lib")
 link_directories("${PADDLE_LIB}/third_party/install/onnxruntime/lib")
 link_directories("${PADDLE_LIB}/third_party/install/paddle2onnx/lib")
+link_directories("${PADDLE_LIB}/third_party/install/yaml-cpp/lib")
 link_directories("${PADDLE_LIB}/paddle/lib")
 
 
@@ -127,13 +130,13 @@ if(WITH_MKL)
             ${PADDLE_LIB}/third_party/install/mklml/lib/libiomp5${CMAKE_SHARED_LIBRARY_SUFFIX})
     execute_process(COMMAND cp -r ${PADDLE_LIB}/third_party/install/mklml/lib/libmklml_intel${CMAKE_SHARED_LIBRARY_SUFFIX} /usr/lib)
   endif ()
-  set(MKLDNN_PATH "${PADDLE_LIB}/third_party/install/mkldnn")
+  set(MKLDNN_PATH "${PADDLE_LIB}/third_party/install/onednn")
   if(EXISTS ${MKLDNN_PATH})
     include_directories("${MKLDNN_PATH}/include")
     if (WIN32)
       set(MKLDNN_LIB ${MKLDNN_PATH}/lib/mkldnn.lib)
     else ()
-      set(MKLDNN_LIB ${MKLDNN_PATH}/lib/libmkldnn.so.0)
+      set(MKLDNN_LIB ${MKLDNN_PATH}/lib/libdnnl.so.3)
     endif ()
   endif()
 else()
@@ -187,6 +190,9 @@ else()
     endif()
 endif(NOT WIN32)
 
+if (EXISTS "${PADDLE_LIB}/third_party/install/yaml-cpp/lib")
+  set(DEPS ${DEPS} yaml-cpp)
+endif()
 
 if(WITH_GPU)
   if(NOT WIN32)
@@ -223,9 +229,9 @@ if (WIN32 AND WITH_MKL)
     add_custom_command(TARGET ${DEMO_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PADDLE_LIB}/third_party/install/mklml/lib/mklml.dll ./mklml.dll
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PADDLE_LIB}/third_party/install/mklml/lib/libiomp5md.dll ./libiomp5md.dll
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PADDLE_LIB}/third_party/install/mkldnn/lib/mkldnn.dll ./mkldnn.dll
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PADDLE_LIB}/third_party/install/onednn/lib/mkldnn.dll ./mkldnn.dll
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PADDLE_LIB}/third_party/install/mklml/lib/mklml.dll ./release/mklml.dll
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PADDLE_LIB}/third_party/install/mklml/lib/libiomp5md.dll ./release/libiomp5md.dll
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PADDLE_LIB}/third_party/install/mkldnn/lib/mkldnn.dll ./release/mkldnn.dll
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PADDLE_LIB}/third_party/install/onednn/lib/mkldnn.dll ./release/mkldnn.dll
     )
 endif()

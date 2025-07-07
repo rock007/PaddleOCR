@@ -40,7 +40,7 @@
 | --- | --- | --- | ---|
 | EDD<sup>[2]</sup> |x| 88.30% |x|
 | TableRec-RARE(ours) | 71.73%| 93.88% |779ms|
-| SLANet(ours) |76.31%|	95.89%|766ms|
+| SLANet(ours) |76.31%| 95.89%|766ms|
 
 性能指标解释如下：
 - Acc: 模型对每张图像里表格结构的识别准确率，错一个token就算错误。
@@ -68,15 +68,15 @@ cd PaddleOCR/ppstructure
 # 下载模型
 mkdir inference && cd inference
 # 下载PP-OCRv3文本检测模型并解压
-wget https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_infer.tar && tar xf ch_PP-OCRv3_det_infer.tar
+wget https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_det_infer.tar && tar xf PP-OCRv3_mobile_det_infer.tar
 # 下载PP-OCRv3文本识别模型并解压
 wget https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_infer.tar && tar xf ch_PP-OCRv3_rec_infer.tar
 # 下载PP-StructureV2中文表格识别模型并解压
-wget https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/ch_ppstructure_mobile_v2.0_SLANet_infer.tar && tar xf ch_ppstructure_mobile_v2.0_SLANet_infer.tar
+wget https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/paddle3.0b2/ch_ppstructure_mobile_v2.0_SLANet_infer.tar && tar xf ch_ppstructure_mobile_v2.0_SLANet_infer.tar
 cd ..
 # 执行表格识别
 python table/predict_table.py \
-    --det_model_dir=inference/ch_PP-OCRv3_det_infer \
+    --det_model_dir=inference/PP-OCRv3_mobile_det_infer \
     --rec_model_dir=inference/ch_PP-OCRv3_rec_infer  \
     --table_model_dir=inference/ch_ppstructure_mobile_v2.0_SLANet_infer \
     --rec_char_dict_path=../ppocr/utils/ppocr_keys_v1.txt \
@@ -137,7 +137,7 @@ wget https://paddleocr.bj.bcebos.com/dygraph_v2.0/table/en_ppocr_mobile_v2.0_tab
 # 下载基于PubTabNet数据集训练的文本识别模型并解压
 wget https://paddleocr.bj.bcebos.com/dygraph_v2.0/table/en_ppocr_mobile_v2.0_table_rec_infer.tar && tar xf en_ppocr_mobile_v2.0_table_rec_infer.tar
 # 下载基于PubTabNet数据集训练的表格识别模型并解压
-wget https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/en_ppstructure_mobile_v2.0_SLANet_infer.tar && tar xf en_ppstructure_mobile_v2.0_SLANet_infer.tar
+wget https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/paddle3.0b2/en_ppstructure_mobile_v2.0_SLANet_infer.tar && tar xf en_ppstructure_mobile_v2.0_SLANet_infer.tar
 cd ..
 
 python3 table/eval_table.py \

@@ -106,14 +106,14 @@ pip3 install pdf2docx-0.0.0-py3-none-any.whl
 ```bash
 # 安装 paddleocr，推荐使用2.6版本
 pip3 install "paddleocr>=2.6"
-paddleocr --image_dir=ppstructure/recovery/UnrealText.pdf --type=structure --recovery=true --use_pdf2docx_api=true
+paddleocr --image_dir=ppstructure/docs/recovery/UnrealText.pdf --type=structure --recovery=true --use_pdf2docx_api=true
 ```
 
 通过命令行的方式：
 
 ```bash
 python3 predict_system.py \
-    --image_dir=ppstructure/recovery/UnrealText.pdf \
+    --image_dir=ppstructure/docs/recovery/UnrealText.pdf \
     --recovery=True \
     --use_pdf2docx_api=True \
     --output=../output/
@@ -142,7 +142,7 @@ paddleocr --image_dir=ppstructure/docs/table/1.png --type=structure --recovery=t
 # 英文测试图
 paddleocr --image_dir=ppstructure/docs/table/1.png --type=structure --recovery=true --lang='en'
 # pdf测试文件
-paddleocr --image_dir=ppstructure/recovery/UnrealText.pdf --type=structure --recovery=true --lang='en'
+paddleocr --image_dir=ppstructure/docs/recovery/UnrealText.pdf --type=structure --recovery=true --lang='en'
 ```
 
 <a name="4.1"></a>
@@ -161,7 +161,7 @@ wget https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_det_infer.tar 
 # 下载英文超轻量PP-OCRv3识别模型并解压
 wget https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_rec_infer.tar && tar xf en_PP-OCRv3_rec_infer.tar
 # 下载英文表格识别模型并解压
-wget https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/en_ppstructure_mobile_v2.0_SLANet_infer.tar
+wget https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/paddle3.0b2/en_ppstructure_mobile_v2.0_SLANet_infer.tar
 tar xf en_ppstructure_mobile_v2.0_SLANet_infer.tar
 # 下载英文版面分析模型
 wget https://paddleocr.bj.bcebos.com/ppstructure/models/layout/picodet_lcnet_x1_0_fgd_layout_infer.tar

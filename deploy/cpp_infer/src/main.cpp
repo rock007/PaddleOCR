@@ -11,15 +11,14 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include "opencv2/core.hpp"
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/imgproc.hpp"
-#include <iostream>
-#include <vector>
+
+#include <opencv2/imgcodecs.hpp>
 
 #include <include/args.h>
-#include <include/paddleocr.h>
 #include <include/paddlestructure.h>
+
+#include <iostream>
+#include <vector>
 
 using namespace PaddleOCR;
 
@@ -75,14 +74,14 @@ void check_params() {
   }
   if (FLAGS_precision != "fp32" && FLAGS_precision != "fp16" &&
       FLAGS_precision != "int8") {
-    std::cout << "precison should be 'fp32'(default), 'fp16' or 'int8'. "
+    std::cout << "precision should be 'fp32'(default), 'fp16' or 'int8'. "
               << std::endl;
     exit(1);
   }
 }
 
 void ocr(std::vector<cv::String> &cv_all_img_names) {
-  PPOCR ocr = PPOCR();
+  PPOCR ocr;
 
   if (FLAGS_benchmark) {
     ocr.reset_timer();
@@ -97,8 +96,8 @@ void ocr(std::vector<cv::String> &cv_all_img_names) {
                 << cv_all_img_names[i] << std::endl;
       continue;
     }
-    img_list.push_back(img);
-    img_names.push_back(cv_all_img_names[i]);
+    img_list.emplace_back(std::move(img));
+    img_names.emplace_back(cv_all_img_names[i]);
   }
 
   std::vector<std::vector<OCRPredictResult>> ocr_results =
@@ -120,13 +119,13 @@ void ocr(std::vector<cv::String> &cv_all_img_names) {
 }
 
 void structure(std::vector<cv::String> &cv_all_img_names) {
-  PaddleOCR::PaddleStructure engine = PaddleOCR::PaddleStructure();
+  PaddleOCR::PaddleStructure engine;
 
   if (FLAGS_benchmark) {
     engine.reset_timer();
   }
 
-  for (int i = 0; i < cv_all_img_names.size(); i++) {
+  for (int i = 0; i < cv_all_img_names.size(); ++i) {
     std::cout << "predict img: " << cv_all_img_names[i] << std::endl;
     cv::Mat img = cv::imread(cv_all_img_names[i], cv::IMREAD_COLOR);
     if (!img.data) {
@@ -138,7 +137,7 @@ void structure(std::vector<cv::String> &cv_all_img_names) {
     std::vector<StructurePredictResult> structure_results = engine.structure(
         img, FLAGS_layout, FLAGS_table, FLAGS_det && FLAGS_rec);
 
-    for (int j = 0; j < structure_results.size(); j++) {
+    for (size_t j = 0; j < structure_results.size(); ++j) {
       std::cout << j << "\ttype: " << structure_results[j].type
                 << ", region: [";
       std::cout << structure_results[j].box[0] << ","

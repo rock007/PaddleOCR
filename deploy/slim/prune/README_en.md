@@ -38,7 +38,7 @@ PaddleOCR also provides a series of [models](../../../doc/doc_en/models_list_en.
   After the pre-trained model is loaded, sensitivity analysis is performed on each network layer of the model to understand the redundancy of each network layer, and save a sensitivity file which named: sen.pickle.  After that, user could load the sensitivity file via the [methods provided by PaddleSlim](https://github.com/PaddlePaddle/PaddleSlim/blob/develop/paddleslim/prune/sensitive.py#L221) and determining the pruning ratio of each network layer automatically. For specific details of sensitivity analysis, see：[Sensitivity analysis](https://github.com/PaddlePaddle/PaddleSlim/blob/develop/docs/en/tutorials/image_classification_sensitivity_analysis_tutorial_en.md)
   The data format of sensitivity file：
 
-```      
+```
 sen.pickle(Dict){
               'layer_weight_name_0': sens_of_each_ratio(Dict){'pruning_ratio_0': acc_loss, 'pruning_ratio_1': acc_loss}
               'layer_weight_name_1': sens_of_each_ratio(Dict){'pruning_ratio_0': acc_loss, 'pruning_ratio_1': acc_loss}
@@ -57,7 +57,7 @@ example：
 Enter the PaddleOCR root directory，perform sensitivity analysis on the model with the following command：
 
 ```bash
-python3.7 deploy/slim/prune/sensitivity_anal.py -c configs/det/ch_ppocr_v2.0/ch_det_mv3_db_v2.0.yml -o Global.pretrained_model="your trained model"  Global.save_model_dir=./output/prune_model/
+python3 deploy/slim/prune/sensitivity_anal.py -c configs/det/ch_ppocr_v2.0/ch_det_mv3_db_v2.0.yml -o Global.pretrained_model="your trained model"  Global.save_model_dir=./output/prune_model/
 ```
 
 

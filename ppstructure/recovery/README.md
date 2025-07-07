@@ -105,19 +105,19 @@ pip3 install pdf2docx-0.0.0-py3-none-any.whl
 
 ## 3. Quick Start using standard PDF parse
 
-`use_pdf2docx_api` use PDF parse for layout recovery, The whl package is also provided  for quick use, follow the above code, for more infomation please refer to [quickstart](../docs/quickstart_en.md) for details.
+`use_pdf2docx_api` use PDF parse for layout recovery, The whl package is also provided  for quick use, follow the above code, for more information please refer to [quickstart](../docs/quickstart_en.md) for details.
 
 ```bash
 # install paddleocr
 pip3 install "paddleocr>=2.6"
-paddleocr --image_dir=ppstructure/recovery/UnrealText.pdf --type=structure --recovery=true --use_pdf2docx_api=true
+paddleocr --image_dir=ppstructure/docs/recovery/UnrealText.pdf --type=structure --recovery=true --use_pdf2docx_api=true
 ```
 
 Command line:
 
 ```bash
 python3 predict_system.py \
-    --image_dir=ppstructure/recovery/UnrealText.pdf \
+    --image_dir=ppstructure/docs/recovery/UnrealText.pdf \
     --recovery=True \
     --use_pdf2docx_api=True \
     --output=../output/
@@ -135,7 +135,7 @@ Through layout analysis, we divided the image/PDF documents into regions, locate
 
 We can restore the test picture through the layout information, OCR detection and recognition structure, table information, and saved pictures.
 
-The whl package is also provided  for quick use, follow the above code, for more infomation please refer to [quickstart](../docs/quickstart_en.md) for details.
+The whl package is also provided  for quick use, follow the above code, for more information please refer to [quickstart](../docs/quickstart_en.md) for details.
 
 ```bash
 paddleocr --image_dir=ppstructure/docs/table/1.png --type=structure --recovery=true --lang='en'
@@ -152,11 +152,11 @@ cd PaddleOCR/ppstructure
 # download model
 mkdir inference && cd inference
 # Download the detection model of the ultra-lightweight English PP-OCRv3 model and unzip it
-https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_det_infer.tar && tar xf en_PP-OCRv3_det_infer.tar
+wget https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_det_infer.tar && tar xf en_PP-OCRv3_det_infer.tar
 # Download the recognition model of the ultra-lightweight English PP-OCRv3 model and unzip it
 wget https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_rec_infer.tar && tar xf en_PP-OCRv3_rec_infer.tar
 # Download the ultra-lightweight English table inch model and unzip it
-wget https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/en_ppstructure_mobile_v2.0_SLANet_infer.tar
+wget https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/paddle3.0b2/en_ppstructure_mobile_v2.0_SLANet_infer.tar
 tar xf en_ppstructure_mobile_v2.0_SLANet_infer.tar
 # Download the layout model of publaynet dataset and unzip it
 wget https://paddleocr.bj.bcebos.com/ppstructure/models/layout/picodet_lcnet_x1_0_fgd_layout_infer.tar
@@ -193,8 +193,8 @@ Field：
 - det_model_dir：OCR detection model path
 - rec_model_dir：OCR recognition model path
 - rec_char_dict_path：OCR recognition dict path. If the Chinese model is used, change to "../ppocr/utils/ppocr_keys_v1.txt". And if you trained the model on your own dataset, change to the trained dictionary
-- table_model_dir：tabel recognition model path
-- table_char_dict_path：tabel recognition dict path. If the Chinese model is used, no need to change
+- table_model_dir：table recognition model path
+- table_char_dict_path：table recognition dict path. If the Chinese model is used, no need to change
 - layout_model_dir：layout analysis model path
 - layout_dict_path：layout analysis dict path. If the Chinese model is used, change to "../ppocr/utils/dict/layout_dict/layout_cdla_dict.txt"
 - recovery：whether to enable layout of recovery, default False

@@ -23,7 +23,7 @@ trainer_list=$(func_parser_value "${lines[14]}")
 if [ ${MODE} = "benchmark_train" ];then
     python_name_list=$(func_parser_value "${lines[2]}")
     array=(${python_name_list}) 
-    python_name=${array[0]}
+    python_name=python
     ${python_name} -m pip install -r requirements.txt
     if [[ ${model_name} =~ "ch_ppocr_mobile_v2_0_det" || ${model_name} =~ "det_mv3_db_v2_0" ]];then
         wget -nc -P  ./pretrain_models/ https://paddleocr.bj.bcebos.com/pretrained/MobileNetV3_large_x0_5_pretrained.pdparams  --no-check-certificate
@@ -39,6 +39,43 @@ if [ ${MODE} = "benchmark_train" ];then
             cat dup* > train_icdar2015_label.txt && rm -rf dup*
             cd ../../../
         fi
+    fi
+    if [[ ${model_name} =~ "PP-OCRv4_mobile_det" ]];then
+        wget -nc -P  ./pretrain_models/ https://paddle-model-ecology.bj.bcebos.com/paddlex/official_pretrained_model/PP-OCRv4_mobile_det_pretrained.pdparams
+  --no-check-certificate
+        rm -rf ./train_data/icdar2015
+        wget -nc -P ./train_data/ https://paddleocr.bj.bcebos.com/dataset/icdar2015_benckmark.tar --no-check-certificate
+        cd ./train_data/ && tar xf icdar2015_benckmark.tar
+        ln -s ./icdar2015_benckmark ./icdar2015
+        cd ../
+    fi
+    if [[ ${model_name} =~ "PP-OCRv4_server_det" ]];then
+        wget -nc -P  ./pretrain_models/ https://paddle-model-ecology.bj.bcebos.com/paddlex/official_pretrained_model/PP-OCRv4_server_det_pretrained.pdparams  --no-check-certificate
+        rm -rf ./train_data/icdar2015
+        wget -nc -P ./train_data/ https://paddleocr.bj.bcebos.com/dataset/icdar2015_benckmark.tar --no-check-certificate
+        cd ./train_data/ && tar xf icdar2015_benckmark.tar
+        ln -s ./icdar2015_benckmark ./icdar2015
+        cd ../
+    fi
+    if [[ ${model_name} =~ "PP-OCRv4_mobile_rec" ]];then
+        rm -rf ./train_data/ic15_data
+        wget -nc -P ./train_data/ https://paddleocr.bj.bcebos.com/dataset/ic15_data_benckmark.tar --no-check-certificate
+        cd ./train_data/ && tar xf ic15_data_benckmark.tar
+        ln -s ./ic15_data_benckmark ./ic15_data
+        cd ic15_data
+        mv rec_gt_train4w.txt rec_gt_train.txt
+        cd ../
+        cd ../
+    fi
+    if [[ ${model_name} =~ "PP-OCRv4_server_rec" ]];then
+        rm -rf ./train_data/ic15_data
+        wget -nc -P ./train_data/ https://paddleocr.bj.bcebos.com/dataset/ic15_data_benckmark.tar --no-check-certificate
+        cd ./train_data/ && tar xf ic15_data_benckmark.tar
+        ln -s ./ic15_data_benckmark ./ic15_data
+        cd ic15_data
+        mv rec_gt_train4w.txt rec_gt_train.txt
+        cd ../
+        cd ../
     fi
     if [[ ${model_name} =~ "ch_ppocr_server_v2_0_det" || ${model_name} =~ "ch_PP-OCRv3_det" ]];then
         rm -rf ./train_data/icdar2015
@@ -81,14 +118,14 @@ if [ ${MODE} = "benchmark_train" ];then
         ln -s ./icdar2015_benckmark ./icdar2015
         cd ../
     fi
-    if [[ ${model_name} =~ "ch_ppocr_mobile_v2_0_rec" || ${model_name} =~ "ch_ppocr_server_v2_0_rec" || ${model_name} =~ "ch_PP-OCRv2_rec" || ${model_name} =~ "rec_mv3_none_bilstm_ctc_v2_0" || ${model_name} =~ "ch_PP-OCRv3_rec" ]];then
+    if [[ ${model_name} =~ "ch_ppocr_mobile_v2_0_rec" || ${model_name} =~ "ch_ppocr_server_v2_0_rec" || ${model_name} =~ "ch_PP-OCRv2_rec" || ${model_name} =~ "rec_mv3_none_bilstm_ctc_v2_0" || ${model_name} =~ "PP-OCRv3_mobile_rec" ]];then
         rm -rf ./train_data/ic15_data
         wget -nc -P ./train_data/ https://paddleocr.bj.bcebos.com/dataset/ic15_data_benckmark.tar --no-check-certificate
         cd ./train_data/ && tar xf ic15_data_benckmark.tar
         ln -s ./ic15_data_benckmark ./ic15_data
         cd ../
     fi
-    if [[ ${model_name} =~ "ch_PP-OCRv2_rec" || ${model_name} =~ "ch_PP-OCRv3_rec" ]];then
+    if [[ ${model_name} =~ "ch_PP-OCRv2_rec" || ${model_name} =~ "PP-OCRv3_mobile_rec" || ${model_name} =~ "PP-OCRv4_mobile_rec" || ${model_name} =~ "PP-OCRv4_server_rec" ]];then
         rm -rf ./train_data/ic15_data
         wget -nc -P ./train_data/ https://paddleocr.bj.bcebos.com/dataset/ic15_data_benckmark.tar --no-check-certificate
         cd ./train_data/ && tar xf ic15_data_benckmark.tar
@@ -108,12 +145,16 @@ if [ ${MODE} = "benchmark_train" ];then
         cd ../
     fi
     if [[ ${model_name} == "slanet" ]];then
-        wget -nc -P ./pretrain_models/ https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/en_ppstructure_mobile_v2.0_SLANet_train.tar --no-check-certificate
-        cd ./pretrain_models/ && tar xf en_ppstructure_mobile_v2.0_SLANet_train.tar  && cd ../
+        wget -nc -P ./pretrain_models/ https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/ch_ppstructure_mobile_v2.0_SLANet_train.tar --no-check-certificate
+        cd ./pretrain_models/ && tar xf ch_ppstructure_mobile_v2.0_SLANet_train.tar  && cd ../
         rm -rf ./train_data/pubtabnet
-        wget -nc -P ./train_data/ https://paddleocr.bj.bcebos.com/dataset/pubtabnet_benckmark.tar --no-check-certificate
-        cd ./train_data/ && tar xf pubtabnet_benckmark.tar
-        ln -s ./pubtabnet_benckmark ./pubtabnet
+        wget -nc -P ./train_data/ https://paddle-model-ecology.bj.bcebos.com/uapi/data/table_rec_dataset_examples.tar --no-check-certificate
+        cd ./train_data/ && tar xf table_rec_dataset_examples.tar
+        ln -s ./table_rec_dataset_examples ./pubtabnet
+        cd pubtabnet
+        for i in `seq 10`;do cp train.txt dup$i.txt;done
+        cat dup* > train.txt && rm -rf dup*
+        cd ../
         cd ../
     fi
     if [[ ${model_name} == "det_r50_dcn_fce_ctw_v2_0" ]]; then
@@ -138,6 +179,26 @@ if [ ${MODE} = "benchmark_train" ];then
         
         cd ../
     fi
+    if [ ${model_name} == "table_master" ];then
+        wget -nc -P ./pretrain_models/ https://paddleocr.bj.bcebos.com/ppstructure/models/tablemaster/table_structure_tablemaster_train.tar --no-check-certificate
+        cd ./pretrain_models/ && tar xf table_structure_tablemaster_train.tar  && cd ../
+        wget -nc -P ./train_data/ https://paddleocr.bj.bcebos.com/dataset/StructureLabel_val_500.tar --no-check-certificate
+        cd ./train_data/ && tar xf StructureLabel_val_500.tar
+        cd ../
+    fi
+    if [ ${model_name} == "rec_svtrnet" ]; then
+        wget -nc -P ./train_data/ https://paddleocr.bj.bcebos.com/dataset/ic15_data_benckmark.tar --no-check-certificate
+        cd ./train_data/ && tar xf ic15_data_benckmark.tar
+        ln -s ./ic15_data_benckmark ./ic15_data
+        cd ic15_data
+        mv rec_gt_train4w.txt rec_gt_train.txt
+
+        for i in `seq 10`;do cp rec_gt_train.txt dup$i.txt;done
+        cat dup* > rec_gt_train.txt && rm -rf dup*
+
+        cd ../
+        cd ../
+    fi
 fi
 
 if [ ${MODE} = "lite_train_lite_infer" ];then
@@ -150,14 +211,21 @@ if [ ${MODE} = "lite_train_lite_infer" ];then
     # pretrain lite train data
     wget -nc -P  ./pretrain_models/ https://paddle-imagenet-models-name.bj.bcebos.com/dygraph/MobileNetV3_large_x0_5_pretrained.pdparams  --no-check-certificate
     wget -nc -P ./pretrain_models/  https://paddleocr.bj.bcebos.com/dygraph_v2.0/en/det_mv3_db_v2.0_train.tar  --no-check-certificate
-    cd ./pretrain_models/ && tar xf det_mv3_db_v2.0_train.tar && cd ../
+    cd ./pretrain_models/
+    tar xf det_mv3_db_v2.0_train.tar
+    cd ../
     if [[ ${model_name} =~ "ch_PP-OCRv2_det" ]];then
         wget -nc -P ./pretrain_models/ https://paddleocr.bj.bcebos.com/PP-OCRv2/chinese/ch_PP-OCRv2_det_distill_train.tar --no-check-certificate
         cd ./pretrain_models/ && tar xf ch_PP-OCRv2_det_distill_train.tar && cd ../
     fi
-    if [[ ${model_name} =~ "ch_PP-OCRv3_det" ]];then
-        wget -nc -P ./pretrain_models/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_distill_train.tar --no-check-certificate
-        cd ./pretrain_models/ && tar xf ch_PP-OCRv3_det_distill_train.tar && cd ../
+    if [[ ${model_name} =~ "PP-OCRv3_det" ]];then
+        wget -nc -P ./pretrain_models/ https://paddle-model-ecology.bj.bcebos.com/paddlex/official_pretrained_model/PP-OCRv3_mobile_det_pretrained.pdparams --no-check-certificate
+    fi
+    if [[ ${model_name} =~ "PP-OCRv4_mobile_det" ]];then
+        wget -nc -P ./pretrain_models/ https://paddleocr.bj.bcebos.com/pretrained/PPLCNetV3_x0_75_ocr_det.pdparams --no-check-certificate
+    fi
+    if [[ ${model_name} =~ "PP-OCRv4_server_det" ]];then
+        wget -nc -P ./pretrain_models/ https://paddleocr.bj.bcebos.com/pretrained/PPHGNet_small_ocr_det.pdparams --no-check-certificate
     fi
     if [ ${model_name} == "en_table_structure" ] || [ ${model_name} == "en_table_structure_PACT" ];then
         wget -nc -P ./pretrain_models/ https://paddleocr.bj.bcebos.com/dygraph_v2.1/table/en_ppocr_mobile_v2.0_table_structure_train.tar --no-check-certificate
@@ -179,6 +247,8 @@ if [ ${MODE} = "lite_train_lite_infer" ];then
     if [ ${model_name} == "table_master" ];then
         wget -nc -P ./pretrain_models/ https://paddleocr.bj.bcebos.com/ppstructure/models/tablemaster/table_structure_tablemaster_train.tar --no-check-certificate
         cd ./pretrain_models/ && tar xf table_structure_tablemaster_train.tar  && cd ../
+        wget -nc -P ./train_data/ https://paddleocr.bj.bcebos.com/dataset/StructureLabel_val_500.tar --no-check-certificate
+        cd ./train_data/ && tar xf StructureLabel_val_500.tar && cd ../
     fi
     rm -rf ./train_data/icdar2015
     rm -rf ./train_data/ic15_data
@@ -205,9 +275,9 @@ if [ ${MODE} = "lite_train_lite_infer" ];then
         wget  -nc -P  ./pretrain_models/  https://paddleocr.bj.bcebos.com/PP-OCRv2/chinese/ch_PP-OCRv2_rec_train.tar --no-check-certificate
         cd ./pretrain_models/ && tar xf ch_PP-OCRv2_rec_train.tar && cd ../
     fi
-    if [ ${model_name} == "ch_PP-OCRv3_rec" ] || [ ${model_name} == "ch_PP-OCRv3_rec_PACT" ]; then
-        wget  -nc -P  ./pretrain_models/  https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_train.tar --no-check-certificate
-        cd ./pretrain_models/ && tar xf ch_PP-OCRv3_rec_train.tar && cd ../
+    if [ ${model_name} == "PP-OCRv3_mobile_rec" ] || [ ${model_name} == "PP-OCRv3_mobile_rec_PACT" ]; then
+        wget  -nc -P  ./pretrain_models/  https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_rec_train.tar --no-check-certificate
+        cd ./pretrain_models/ && tar xf PP-OCRv3_mobile_rec_train.tar && cd ../
     fi
     if [ ${model_name} == "det_r18_db_v2_0" ]; then
         wget -nc -P ./pretrain_models/  https://paddleocr.bj.bcebos.com/pretrained/ResNet18_vd_pretrained.pdparams  --no-check-certificate
@@ -312,9 +382,8 @@ elif [ ${MODE} = "whole_train_whole_infer" ];then
         wget -nc -P ./pretrain_models/ https://paddleocr.bj.bcebos.com/PP-OCRv2/chinese/ch_PP-OCRv2_det_distill_train.tar --no-check-certificate
         cd ./pretrain_models/ && tar xf ch_PP-OCRv2_det_distill_train.tar && cd ../
     fi
-    if [ ${model_name} == "ch_PP-OCRv3_det" ]; then
-        wget -nc -P ./pretrain_models/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_distill_train.tar --no-check-certificate
-        cd ./pretrain_models/ && tar xf ch_PP-OCRv3_det_distill_train.tar && cd ../
+    if [ ${model_name} == "PP-OCRv3_det" ]; then
+        wget -nc -P ./pretrain_models/ https://paddle-model-ecology.bj.bcebos.com/paddlex/official_pretrained_model/PP-OCRv3_mobile_det_pretrained.pdparams --no-check-certificate
     fi
     if [ ${model_name} == "en_server_pgnetA" ]; then
         wget -nc -P ./train_data/  https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/total_text_lite.tar  --no-check-certificate
@@ -351,9 +420,8 @@ elif [ ${MODE} = "lite_train_whole_infer" ];then
         wget -nc -P ./pretrain_models/ https://paddleocr.bj.bcebos.com/PP-OCRv2/chinese/ch_PP-OCRv2_det_distill_train.tar --no-check-certificate
         cd ./pretrain_models/ && tar xf ch_PP-OCRv2_det_distill_train.tar && cd ../
     fi
-    if [ ${model_name} == "ch_PP-OCRv3_det" ]; then
-        wget -nc -P ./pretrain_models/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_distill_train.tar --no-check-certificate
-        cd ./pretrain_models/ && tar xf ch_PP-OCRv3_det_distill_train.tar && cd ../
+    if [ ${model_name} == "PP-OCRv3_det" ]; then
+        wget -nc -P ./pretrain_models/ https://paddle-model-ecology.bj.bcebos.com/paddlex/official_pretrained_model/PP-OCRv3_mobile_det_pretrained.pdparams --no-check-certificate
     fi
     if [[ ${model_name} =~ "en_table_structure" ]];then
         wget -nc -P ./pretrain_models/ https://paddleocr.bj.bcebos.com/dygraph_v2.1/table/en_ppocr_mobile_v2.0_table_structure_train.tar --no-check-certificate
@@ -366,7 +434,7 @@ elif [ ${MODE} = "whole_infer" ];then
     python_name_list=$(func_parser_value "${lines[2]}")
     array=(${python_name_list}) 
     python_name=${array[0]}
-    ${python_name} -m pip install paddleslim --force-reinstall
+    ${python_name} -m pip install paddleslim
     ${python_name} -m pip install -r requirements.txt
     wget -nc -P ./inference https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/ch_det_data_50.tar --no-check-certificate
     wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/rec_inference.tar --no-check-certificate
@@ -412,9 +480,9 @@ elif [ ${MODE} = "whole_infer" ];then
         cd ./inference && tar xf ch_PP-OCRv2_det_infer.tar && tar xf ch_PP-OCRv2_rec_infer.tar && tar xf ch_det_data_50.tar && cd ../
     fi
     if [[ ${model_name} =~ "ch_PP-OCRv3" ]]; then
-        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_infer.tar --no-check-certificate
-        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_infer.tar --no-check-certificate
-        cd ./inference && tar xf ch_PP-OCRv3_det_infer.tar && tar xf ch_PP-OCRv3_rec_infer.tar && tar xf ch_det_data_50.tar && cd ../
+        wget -nc -P ./inference/ https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_det_infer.tar --no-check-certificate
+        wget -nc -P ./inference/ https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_rec_infer.tar --no-check-certificate
+        cd ./inference && tar xf PP-OCRv3_mobile_det_infer.tar && tar xf PP-OCRv3_mobile_rec_infer.tar && tar xf ch_det_data_50.tar && cd ../
     fi
     if [[ ${model_name} =~ "ch_PP-OCRv2_det" ]]; then
         eval_model_name="ch_PP-OCRv2_det_infer"
@@ -422,8 +490,8 @@ elif [ ${MODE} = "whole_infer" ];then
         cd ./inference && tar xf ${eval_model_name}.tar && tar xf ch_det_data_50.tar && cd ../
     fi
     if [[ ${model_name} =~ "ch_PP-OCRv3_det" ]]; then
-        eval_model_name="ch_PP-OCRv3_det_infer"
-        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_infer.tar --no-check-certificate
+        eval_model_name="PP-OCRv3_mobile_det_infer"
+        wget -nc -P ./inference/ https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_det_infer.tar --no-check-certificate
         cd ./inference && tar xf ${eval_model_name}.tar && tar xf ch_det_data_50.tar && cd ../
     fi
     if [[ ${model_name} =~ "ch_PP-OCRv2_rec" ]]; then
@@ -432,15 +500,15 @@ elif [ ${MODE} = "whole_infer" ];then
         wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/PP-OCRv2/chinese/ch_PP-OCRv2_rec_slim_quant_infer.tar --no-check-certificate
         cd ./inference && tar xf ${eval_model_name}.tar && tar xf ch_PP-OCRv2_rec_slim_quant_infer.tar && cd ../
     fi   
-    if [[ ${model_name} =~ "ch_PP-OCRv3_rec" ]]; then
-        eval_model_name="ch_PP-OCRv3_rec_infer"
-        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_infer.tar --no-check-certificate
-        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_slim_infer.tar --no-check-certificate
-        cd ./inference && tar xf ${eval_model_name}.tar && tar xf ch_PP-OCRv3_rec_slim_infer.tar && cd ../
+    if [[ ${model_name} =~ "PP-OCRv3_mobile_rec" ]]; then
+        eval_model_name="PP-OCRv3_mobile_rec_infer"
+        wget -nc -P ./inference/ https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_rec_infer.tar --no-check-certificate
+        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/PP-OCRv3_mobile_rec_slim_infer.tar --no-check-certificate
+        cd ./inference && tar xf ${eval_model_name}.tar && tar xf PP-OCRv3_mobile_rec_slim_infer.tar && cd ../
     fi
-    if [[ ${model_name} == "ch_PP-OCRv3_rec_PACT" ]]; then
-        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_slim_infer.tar --no-check-certificate
-        cd ./inference && tar xf ch_PP-OCRv3_rec_slim_infer.tar && cd ../
+    if [[ ${model_name} == "PP-OCRv3_mobile_rec_PACT" ]]; then
+        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/PP-OCRv3_mobile_rec_slim_infer.tar --no-check-certificate
+        cd ./inference && tar xf PP-OCRv3_mobile_rec_slim_infer.tar && cd ../
     fi  
     if [ ${model_name} == "en_server_pgnetA" ]; then
         wget -nc -P ./inference/  https://paddleocr.bj.bcebos.com/dygraph_v2.0/pgnet/en_server_pgnetA.tar  --no-check-certificate
@@ -550,10 +618,10 @@ elif [ ${MODE} = "whole_infer" ];then
         cd ../
     fi
     if [[ ${model_name} =~ "slanet" ]];then
-        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/en_ppstructure_mobile_v2.0_SLANet_infer.tar --no-check-certificate
-        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_infer.tar --no-check-certificate
-        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_infer.tar --no-check-certificate
-        cd ./inference/ && tar xf en_ppstructure_mobile_v2.0_SLANet_infer.tar && tar xf ch_PP-OCRv3_det_infer.tar && tar xf ch_PP-OCRv3_rec_infer.tar && cd ../
+        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/paddle3.0b2/en_ppstructure_mobile_v2.0_SLANet_infer.tar --no-check-certificate
+        wget -nc -P ./inference/ https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_det_infer.tar --no-check-certificate
+        wget -nc -P ./inference/ https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_rec_infer.tar --no-check-certificate
+        cd ./inference/ && tar xf en_ppstructure_mobile_v2.0_SLANet_infer.tar && tar xf PP-OCRv3_mobile_det_infer.tar && tar xf PP-OCRv3_mobile_rec_infer.tar && cd ../
     fi
     if [[ ${model_name} =~ "vi_layoutxlm_ser" ]]; then
         ${python_name} -m pip install -r ppstructure/kie/requirements.txt
@@ -584,15 +652,15 @@ if [[ ${model_name} =~ "KL" ]]; then
         cd ./train_data/ && tar xf ic15_data.tar && cd ../
         cd ./inference && tar xf rec_inference.tar && tar xf ch_PP-OCRv2_rec_infer.tar && cd ../
     fi
-    if [ ${model_name} = "ch_PP-OCRv3_rec_KL" ]; then
-        wget -nc -P ./inference https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_infer.tar  --no-check-certificate
+    if [ ${model_name} = "PP-OCRv3_mobile_rec_KL" ]; then
+        wget -nc -P ./inference https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_rec_infer.tar  --no-check-certificate
         wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/rec_inference.tar  --no-check-certificate
         wget -nc -P ./train_data/ https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/ic15_data.tar --no-check-certificate
         cd ./train_data/ && tar xf ic15_data.tar 
         wget -nc -P ./ic15_data/ https://paddleocr.bj.bcebos.com/dataset/rec_gt_train_lite.txt --no-check-certificate
         wget -nc -P ./ic15_data/ https://paddleocr.bj.bcebos.com/dataset/rec_gt_test_lite.txt --no-check-certificate
         cd ../
-        cd ./inference && tar xf rec_inference.tar && tar xf ch_PP-OCRv3_rec_infer.tar && cd ../
+        cd ./inference && tar xf rec_inference.tar && tar xf PP-OCRv3_mobile_rec_infer.tar && cd ../
     fi
     if [ ${model_name} = "ch_PP-OCRv2_det_KL" ]; then
         wget -nc -P ./inference https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/ch_det_data_50.tar  --no-check-certificate
@@ -601,8 +669,8 @@ if [[ ${model_name} =~ "KL" ]]; then
     fi 
     if [ ${model_name} = "ch_PP-OCRv3_det_KL" ]; then
         wget -nc -P ./inference https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/ch_det_data_50.tar  --no-check-certificate
-        wget -nc -P ./inference https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_infer.tar  --no-check-certificate
-        cd ./inference && tar xf ch_PP-OCRv3_det_infer.tar && tar xf ch_det_data_50.tar && cd ../
+        wget -nc -P ./inference https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_det_infer.tar  --no-check-certificate
+        cd ./inference && tar xf PP-OCRv3_mobile_det_infer.tar && tar xf ch_det_data_50.tar && cd ../
     fi 
     if [ ${model_name} = "ch_ppocr_mobile_v2_0_rec_KL" ]; then
         wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_rec_infer.tar --no-check-certificate
@@ -686,8 +754,8 @@ if [ ${MODE} = "cpp_infer" ];then
         cd ./inference && tar xf ch_PP-OCRv2_rec_pact_infer.tar && tar xf rec_inference.tar && cd ../
     elif [ ${model_name} = "ch_PP-OCRv3_det" ]; then
         wget -nc -P ./inference https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/ch_det_data_50.tar  --no-check-certificate
-        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_infer.tar  --no-check-certificate
-        cd ./inference && tar xf ch_PP-OCRv3_det_infer.tar && tar xf ch_det_data_50.tar && cd ../
+        wget -nc  -P ./inference https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_det_infer.tar  --no-check-certificate
+        cd ./inference && tar xf PP-OCRv3_mobile_det_infer.tar && tar xf ch_det_data_50.tar && cd ../
     elif [ ${model_name} = "ch_PP-OCRv3_det_KL" ]; then
         wget -nc -P ./inference https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/ch_det_data_50.tar  --no-check-certificate
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/ch_PP-OCRv3_det_klquant_infer.tar  --no-check-certificate
@@ -696,18 +764,18 @@ if [ ${MODE} = "cpp_infer" ];then
         wget -nc -P ./inference https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/ch_det_data_50.tar  --no-check-certificate
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/ch_PP-OCRv3_det_pact_infer.tar  --no-check-certificate
         cd ./inference && tar xf ch_PP-OCRv3_det_pact_infer.tar && tar xf ch_det_data_50.tar && cd ../
-    elif [ ${model_name} = "ch_PP-OCRv3_rec" ]; then
+    elif [ ${model_name} = "PP-OCRv3_mobile_rec" ]; then
         wget -nc -P ./inference https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/rec_inference.tar  --no-check-certificate
-        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_infer.tar  --no-check-certificate
-        cd ./inference && tar xf ch_PP-OCRv3_rec_infer.tar && tar xf rec_inference.tar && cd ../
-    elif [ ${model_name} = "ch_PP-OCRv3_rec_KL" ]; then
+        wget -nc  -P ./inference https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_rec_infer.tar  --no-check-certificate
+        cd ./inference && tar xf PP-OCRv3_mobile_rec_infer.tar && tar xf rec_inference.tar && cd ../
+    elif [ ${model_name} = "PP-OCRv3_mobile_rec_KL" ]; then
         wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/rec_inference.tar  --no-check-certificate
-        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/ch_PP-OCRv3_rec_klquant_infer.tar  --no-check-certificate
-        cd ./inference && tar xf ch_PP-OCRv3_rec_klquant_infer.tar && tar xf rec_inference.tar && cd ../
-    elif [ ${model_name} = "ch_PP-OCRv3_rec_PACT" ]; then
+        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/PP-OCRv3_mobile_rec_klquant_infer.tar  --no-check-certificate
+        cd ./inference && tar xf PP-OCRv3_mobile_rec_klquant_infer.tar && tar xf rec_inference.tar && cd ../
+    elif [ ${model_name} = "PP-OCRv3_mobile_rec_PACT" ]; then
         wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/rec_inference.tar  --no-check-certificate
-        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/ch_PP-OCRv3_rec_pact_infer.tar  --no-check-certificate
-        cd ./inference && tar xf ch_PP-OCRv3_rec_pact_infer.tar && tar xf rec_inference.tar && cd ../
+        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/PP-OCRv3_mobile_rec_pact_infer.tar  --no-check-certificate
+        cd ./inference && tar xf PP-OCRv3_mobile_rec_pact_infer.tar && tar xf rec_inference.tar && cd ../
     elif  [ ${model_name} = "ch_ppocr_mobile_v2_0" ]; then
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_det_infer.tar  --no-check-certificate
         wget -nc -P ./inference https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/ch_det_data_50.tar  --no-check-certificate
@@ -724,10 +792,10 @@ if [ ${MODE} = "cpp_infer" ];then
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/PP-OCRv2/chinese/ch_PP-OCRv2_rec_infer.tar  --no-check-certificate
         cd ./inference && tar xf ch_PP-OCRv2_det_infer.tar && tar xf ch_PP-OCRv2_rec_infer.tar && tar xf ch_det_data_50.tar && cd ../
     elif  [ ${model_name} = "ch_PP-OCRv3" ]; then
-        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_infer.tar  --no-check-certificate
+        wget -nc  -P ./inference https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_det_infer.tar  --no-check-certificate
         wget -nc -P ./inference https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/ch_det_data_50.tar  --no-check-certificate
-        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_infer.tar  --no-check-certificate
-        cd ./inference && tar xf ch_PP-OCRv3_det_infer.tar && tar xf ch_PP-OCRv3_rec_infer.tar && tar xf ch_det_data_50.tar && cd ../
+        wget -nc  -P ./inference https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_rec_infer.tar  --no-check-certificate
+        cd ./inference && tar xf PP-OCRv3_mobile_det_infer.tar && tar xf PP-OCRv3_mobile_rec_infer.tar && tar xf ch_det_data_50.tar && cd ../
     elif [[ ${model_name} =~ "en_table_structure" ]];then
         wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/dygraph_v2.0/table/en_ppocr_mobile_v2.0_table_det_infer.tar --no-check-certificate
         wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/dygraph_v2.0/table/en_ppocr_mobile_v2.0_table_rec_infer.tar --no-check-certificate
@@ -742,10 +810,10 @@ if [ ${MODE} = "cpp_infer" ];then
         fi
         cd ../
     elif [[ ${model_name} =~ "slanet" ]];then
-        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/ch_ppstructure_mobile_v2.0_SLANet_infer.tar --no-check-certificate
-        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_infer.tar --no-check-certificate
-        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_infer.tar --no-check-certificate
-        cd ./inference/ && tar xf ch_ppstructure_mobile_v2.0_SLANet_infer.tar && tar xf ch_PP-OCRv3_det_infer.tar && tar xf ch_PP-OCRv3_rec_infer.tar && cd ../
+        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/paddle3.0b2/ch_ppstructure_mobile_v2.0_SLANet_infer.tar --no-check-certificate
+        wget -nc -P ./inference/ https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_det_infer.tar --no-check-certificate
+        wget -nc -P ./inference/ https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_rec_infer.tar --no-check-certificate
+        cd ./inference/ && tar xf ch_ppstructure_mobile_v2.0_SLANet_infer.tar && tar xf PP-OCRv3_mobile_det_infer.tar && tar xf PP-OCRv3_mobile_rec_infer.tar && cd ../
     fi
 fi
 
@@ -768,10 +836,10 @@ if [ ${MODE} = "serving_infer" ];then
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/ch_PP-OCRv2_det_klquant_infer.tar --no-check-certificate
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/ch_PP-OCRv2_rec_klquant_infer.tar --no-check-certificate
         cd ./inference && tar xf ch_PP-OCRv2_det_klquant_infer.tar && tar xf ch_PP-OCRv2_rec_klquant_infer.tar && cd ../
-    elif [ ${model_name} == "ch_PP-OCRv3_det_KL" ] || [ ${model_name} == "ch_PP-OCRv3_rec_KL" ] ; then
+    elif [ ${model_name} == "ch_PP-OCRv3_det_KL" ] || [ ${model_name} == "PP-OCRv3_mobile_rec_KL" ] ; then
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/ch_PP-OCRv3_det_klquant_infer.tar --no-check-certificate
-        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/ch_PP-OCRv3_rec_klquant_infer.tar --no-check-certificate
-        cd ./inference && tar xf ch_PP-OCRv3_det_klquant_infer.tar && tar xf ch_PP-OCRv3_rec_klquant_infer.tar && cd ../
+        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/PP-OCRv3_mobile_rec_klquant_infer.tar --no-check-certificate
+        cd ./inference && tar xf ch_PP-OCRv3_det_klquant_infer.tar && tar xf PP-OCRv3_mobile_rec_klquant_infer.tar && cd ../
     elif [ ${model_name} == "ch_ppocr_mobile_v2_0_det_PACT" ] || [ ${model_name} == "ch_ppocr_mobile_v2.0_rec_PACT" ] ; then
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/ch_ppocr_mobile_v2.0_det_pact_infer.tar --no-check-certificate
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/ch_ppocr_mobile_v2.0_rec_pact_infer.tar --no-check-certificate
@@ -780,10 +848,10 @@ if [ ${MODE} = "serving_infer" ];then
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/ch_PP-OCRv2_det_pact_infer.tar --no-check-certificate
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/ch_PP-OCRv2_rec_pact_infer.tar --no-check-certificate
         cd ./inference && tar xf ch_PP-OCRv2_det_pact_infer.tar && tar xf ch_PP-OCRv2_rec_pact_infer.tar && cd ../
-    elif [ ${model_name} == "ch_PP-OCRv3_det_PACT" ] || [ ${model_name} == "ch_PP-OCRv3_rec_PACT" ] ; then
+    elif [ ${model_name} == "ch_PP-OCRv3_det_PACT" ] || [ ${model_name} == "PP-OCRv3_mobile_rec_PACT" ] ; then
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/ch_PP-OCRv3_det_pact_infer.tar --no-check-certificate
-        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/ch_PP-OCRv3_rec_pact_infer.tar --no-check-certificate
-        cd ./inference && tar xf ch_PP-OCRv3_det_pact_infer.tar && tar xf ch_PP-OCRv3_rec_pact_infer.tar && cd ../
+        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/tipc_fake_model/PP-OCRv3_mobile_rec_pact_infer.tar --no-check-certificate
+        cd ./inference && tar xf ch_PP-OCRv3_det_pact_infer.tar && tar xf PP-OCRv3_mobile_rec_pact_infer.tar && cd ../
     elif [[ ${model_name} =~ "ch_ppocr_mobile_v2_0" ]]; then
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_det_infer.tar --no-check-certificate
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_rec_infer.tar --no-check-certificate
@@ -797,9 +865,9 @@ if [ ${MODE} = "serving_infer" ];then
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/PP-OCRv2/chinese/ch_PP-OCRv2_rec_infer.tar --no-check-certificate
         cd ./inference && tar xf ch_PP-OCRv2_det_infer.tar && tar xf ch_PP-OCRv2_rec_infer.tar && cd ../
     elif [[ ${model_name} =~ "ch_PP-OCRv3" ]]; then
-        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_infer.tar --no-check-certificate
-        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_infer.tar --no-check-certificate
-        cd ./inference && tar xf ch_PP-OCRv3_det_infer.tar && tar xf ch_PP-OCRv3_rec_infer.tar && cd ../
+        wget -nc  -P ./inference https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_det_infer.tar --no-check-certificate
+        wget -nc  -P ./inference https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_rec_infer.tar --no-check-certificate
+        cd ./inference && tar xf PP-OCRv3_mobile_det_infer.tar && tar xf PP-OCRv3_mobile_rec_infer.tar && cd ../
     fi
     # wget data
     wget -nc -P ./inference https://paddleocr.bj.bcebos.com/dygraph_v2.0/test/ch_det_data_50.tar  --no-check-certificate
@@ -825,11 +893,11 @@ if [ ${MODE} = "paddle2onnx_infer" ];then
         wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/PP-OCRv2/chinese/ch_PP-OCRv2_rec_infer.tar --no-check-certificate
         cd ./inference && tar xf ch_PP-OCRv2_det_infer.tar && tar xf ch_PP-OCRv2_rec_infer.tar && cd ../
     elif [[ ${model_name} =~ "ch_PP-OCRv3" ]]; then
-        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_infer.tar --no-check-certificate
-        wget -nc  -P ./inference https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_infer.tar --no-check-certificate
-        cd ./inference && tar xf ch_PP-OCRv3_det_infer.tar && tar xf ch_PP-OCRv3_rec_infer.tar && cd ../
+        wget -nc  -P ./inference https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_det_infer.tar --no-check-certificate
+        wget -nc  -P ./inference https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv3_mobile_rec_infer.tar --no-check-certificate
+        cd ./inference && tar xf PP-OCRv3_mobile_det_infer.tar && tar xf PP-OCRv3_mobile_rec_infer.tar && cd ../
     elif [[ ${model_name} =~ "slanet" ]];then
-        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/ch_ppstructure_mobile_v2.0_SLANet_infer.tar --no-check-certificate
+        wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/paddle3.0b2/ch_ppstructure_mobile_v2.0_SLANet_infer.tar --no-check-certificate
         cd ./inference/ && tar xf ch_ppstructure_mobile_v2.0_SLANet_infer.tar && cd ../
     elif [[ ${model_name} =~ "en_table_structure" ]];then
         wget -nc -P ./inference/ https://paddleocr.bj.bcebos.com/dygraph_v2.0/table/en_ppocr_mobile_v2.0_table_structure_infer.tar --no-check-certificate
