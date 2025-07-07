@@ -1,8 +1,9 @@
 import os
 import time
 from bottle import Bottle,get, post, request,static_file,route, run
-from paddleocr import PaddleOCR, draw_ocr
-
+from paddleocr import PaddleOCR 
+#from paddleocr.tools.infer.utility import draw_ocr
+from tools.infer.utility import draw_ocr, draw_boxes, str2bool
 app = Bottle()
 
 prePath="/ocr"
